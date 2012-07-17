@@ -1,9 +1,9 @@
 [submodule "click-brn"]
 	path = click-brn
-	url = ssh://gitsar/click-brn
+	url = git@gitsar:click-brn
 [submodule "click-brn-scripts"]
 	path = click-brn-scripts
-	url = ssh://gitsar/click-brn-scripts
+	url = git@gitsar:click-brn-scripts
 [submodule "helper"]
 	path = helper
-	url = ssh://gitsar/helper
+	url = git@gitsar:helper
