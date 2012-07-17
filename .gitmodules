@@ -1,0 +1,9 @@
+[submodule "click-brn"]
+	path = click-brn
+	url = ssh://gitsar/home/sombrutz/repository/click-brn
+[submodule "click-brn-scripts"]
+	path = click-brn-scripts
+	url = ssh://gitsar/home/sombrutz/repository/click-brn-scripts
+[submodule "helper"]
+	path = helper
+	url = ssh://gitsar/home/sombrutz/repository/helper
