@@ -28,10 +28,10 @@ GITHOST=gitsar
 #*******************************************************************************************
 
 if [ ! -e brn-tools ]; then
-  if [ ! -f click-brn ]; then
+  if [ ! -e click-brn ]; then
     echo "Get sources..."
     git clone git@$GITHOST:brn-tools
-  
+
     echo "Start build"
     (cd ./brn-tools; sh ./brn-tools.sh)
     exit $?
