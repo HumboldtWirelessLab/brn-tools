@@ -133,6 +133,7 @@ else
 
   if [ $TESTS_OK -ne $TESTS_OVERALL ]; then
     echo "Detect failures. Please send test.log, click_build.log and ns2_build.log (hwl-team)."
+    exit 1
   else
     rm -f test.log click_build.log ns2_build.log
   fi
