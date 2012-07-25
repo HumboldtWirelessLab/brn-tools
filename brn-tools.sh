@@ -99,6 +99,10 @@ git submodule update
 #******************************** B U I L D ****************************
 #***********************************************************************
 
+if [ "x$CLICKPATH" = "x" ]; then
+  CLICKPATH=$DIR/click-brn
+fi
+
 if [ "x$BUILDCLICK" = "xyes" ]; then
   (cd click-brn;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC" /bin/sh brn-conf.sh ns2_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
 fi
