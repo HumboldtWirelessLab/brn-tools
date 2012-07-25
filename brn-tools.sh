@@ -18,6 +18,26 @@ case "$SIGN" in
         ;;
 esac
 
+FULLFILENAME=`basename $0`
+FULLFILENAME=$DIR/$FULLFILENAME
+
+GITHOST=gitsar
+
+#*******************************************************************************************
+#*************************** G E T   S O U R C E S   ( S T A G E   1 ) *********************
+#*******************************************************************************************
+
+if [ ! -e brn-tools ]; then
+  echo "Get sources..."
+  git clone git@$GITHOST:brn-tools
+  
+  echo "Start build"
+  sh ./brn-tools/brn-tools.sh
+  
+  exit 0
+fi
+
+cd brn-tools
 
 echo "Make sure that you have the following packages:"
 echo " * g++"
@@ -47,12 +67,6 @@ if [ "x$1" = "xhelp" ]; then
   exit 0
 fi
 
-FULLFILENAME=`basename $0`
-FULLFILENAME=$DIR/$FULLFILENAME
-
-GITHOST=gitsar
-#GITHOST=nfs-student
-
 if [ "x$DEVELOP" = "x" ]; then
   DEVELOP=1
 fi
@@ -71,35 +85,15 @@ fi
 
 echo "Use $CPUS cpus"
 
-#***********************************************************************
-#*************************** G E T   S O U R C E S *********************
-#***********************************************************************
+#*****************************************************************************************
+#*************************** G E T   S O U R C E S ( S T A G E   2 ) *********************
+#*****************************************************************************************
 
-if [ "x$CLICKPATH" = "x" ]; then
-  git clone ssh://$GITHOST/home/sombrutz/repository/click-brn/.git
-  CLICKPATH=$DIR/click-brn
-  BUILDCLICK=yes
-else
-  BUILDCLICK=no
-fi
+BUILDCLICK=yes
+BUILDCLICKSCRIPTS=yes
 
-git clone ssh://$GITHOST/home/sombrutz/repository/brn-ns2-click.git
-
-if [ "x$CLICKSCRIPTS" = "x" ]; then
-  git clone ssh://$GITHOST/home/sombrutz/repository/click-brn-scripts.git
-  BUILDCLICKSCRIPTS=yes
-else
-  BUILDCLICKSCRIPTS=no
-fi
-
-if [ "x$HELPER" = "x" ]; then
-  git clone ssh://$GITHOST/home/sombrutz/repository/helper.git
-fi
-
-if [ "x$DEVELOP" = "x1" ]; then
-  mkdir -p $DIR/ns2/src
-  (cd $DIR/ns2/src; git clone ssh://$GITHOST/home/sombrutz/repository/ns-2.34.git)
-fi
+git submodule init
+git submodule update
 
 #***********************************************************************
 #******************************** B U I L D ****************************
@@ -110,14 +104,6 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
 fi
 
 (cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
-
-#if [ "x$BUILDCLICKSCRIPTS" = "xyes" ]; then
-#  (cd click-brn-scripts; ./build.sh)
-#fi
-
-if [ $CLEAN -eq 1 ]; then
-  rm -rf $DIR/brn-ns2-click
-fi
 
 echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$DIR/click-brn/ns/:$DIR/ns2/lib" > $DIR/brn-tools.bashrc
 echo "export PATH=$DIR/ns2/bin/:$CLICKPATH/userlevel/:$CLICKPATH/tools/click-align/:$DIR/helper/simulation/bin/:$DIR/helper/evaluation/bin:\$PATH" >> $DIR/brn-tools.bashrc
