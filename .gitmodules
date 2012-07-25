@@ -7,8 +7,8 @@
 [submodule "helper"]
 	path = helper
 	url = git@gitsar:helper
-[submodule "ns/src/ns-2.34"]
-	path = ns/src/ns-2.34
+[submodule "ns2/src/ns-2.34"]
+	path = ns2/src/ns-2.34
 	url = git@gitsar:ns-2.34
 [submodule "brn-ns2-click"]
 	path = brn-ns2-click
