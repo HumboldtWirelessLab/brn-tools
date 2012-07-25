@@ -28,16 +28,20 @@ GITHOST=gitsar
 #*******************************************************************************************
 
 if [ ! -e brn-tools ]; then
-  echo "Get sources..."
-  git clone git@$GITHOST:brn-tools
+  if [ ! -f click-brn ]; then
+    echo "Get sources..."
+    git clone git@$GITHOST:brn-tools
   
+    echo "Start build"
+    (cd ./brn-tools; sh ./brn-tools.sh)
+    exit $?
+  fi
+else
   echo "Start build"
-  sh ./brn-tools/brn-tools.sh
+  (cd ./brn-tools; sh ./brn-tools.sh)
+  exit $?
+fi  
   
-  exit 0
-fi
-
-cd brn-tools
 
 echo "Make sure that you have the following packages:"
 echo " * g++"
