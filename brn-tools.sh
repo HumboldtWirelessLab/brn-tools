@@ -126,12 +126,12 @@ else
 
   . $DIR/brn-tools.bashrc
 
-  (cd $DIR/click-brn-scripts/; sh ./test.sh) > test.log
+  (cd $DIR/click-brn-scripts/; sh ./test.sh) > test.log 2>&1
 
   #less test.log
 
-  TESTS_OVERALL=`cat test.log | wc -l`
-  TESTS_OK=`cat test.log | awk '{print $3}' | grep "ok" | wc -l`
+  TESTS_OVERALL=`cat test.log | grep "Test" | wc -l`
+  TESTS_OK=`cat test.log | grep "Test" | awk '{print $3}' | grep "ok" | wc -l`
 
   echo "$TESTS_OK of $TESTS_OVERALL tests finished without errors. See $DIR/click-brn-scripts/testbed.pdf for more details."
 
