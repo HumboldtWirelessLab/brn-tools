@@ -126,7 +126,7 @@ else
 
   . $DIR/brn-tools.bashrc
 
-  (cd $DIR/click-brn-scripts/; sh ./test.sh) > test.log 2>&1
+  (cd $DIR/click-brn-scripts/; sh ./test.sh) > test.log 2> /dev/null
 
   #less test.log
 
