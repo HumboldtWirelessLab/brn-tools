@@ -13,3 +13,6 @@
 [submodule "brn-ns2-click"]
 	path = brn-ns2-click
 	url = git@gitsar:brn-ns2-click
+[submodule "jist-brn"]
+	path = jist-brn
+	url = git@gitsar:jist-brn
