@@ -166,8 +166,8 @@ exit 0
 #INFO
 #INFO Well done !
 #INFO
-#INFO Use "source TARGETDIR/brn-tools.bashrc" to setup the path-var or add stuff to .bashrc
-#INFO
+#INFO Use "source TARGETDIR/brn-tools.bashrc" to setup the path-var or add following line to .bashrc:
+#INFO if [ -e TARGETDIR/brn-tools.bashrc ]; then . TARGETDIR/brn-tools.bashrc; fi
 #INFO
 
 #HELP Update NS2: CLICKPATH=/XXX/click-brn CLICKSCRIPTS=/XXX/click-brn-scripts/ sh ./brn-tools.sh
