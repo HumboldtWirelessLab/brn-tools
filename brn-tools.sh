@@ -113,8 +113,15 @@ fi
 
 (cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
 
-echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$DIR/click-brn/ns/:$DIR/ns2/lib" > $DIR/brn-tools.bashrc
-echo "export PATH=$DIR/ns2/bin/:$CLICKPATH/userlevel/:$CLICKPATH/tools/click-align/:$DIR/helper/simulation/bin/:$DIR/helper/evaluation/bin:\$PATH" >> $DIR/brn-tools.bashrc
+(cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
+
+echo "export BRN_TOOLS_PATH=$DIR"
+echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/"
+echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$CLICKPATH/ns/:\$BRN_TOOLS_PATH/ns2/lib" > $DIR/brn-tools.bashrc
+echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$PATH" >> $DIR/brn-tools.bashrc
+echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/.bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
+echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/.bashrc.jist" >> $DIR/brn-tools.bashrc
+echo "fi" >> $DIR/brn-tools.bashrc
 
 cat $FULLFILENAME | grep "^#INFO" | sed -e "s/#INFO[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
 
