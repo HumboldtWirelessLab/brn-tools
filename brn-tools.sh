@@ -147,10 +147,10 @@ else
   echo "$TESTS_OK of $TESTS_OVERALL tests finished without errors. See $DIR/click-brn-scripts/testbed.pdf for more details."
 
   if [ $TESTS_OK -ne $TESTS_OVERALL ]; then
-    echo "Detect failures. Please send test.log, click_build.log and ns2_build.log (hwl-team)."
+    echo "Detect failures. Please send test.log, click_build.log, jist_build.log and ns2_build.log (hwl-team)."
     exit 1
   else
-    rm -f test.log click_build.log ns2_build.log
+    rm -f test.log click_build.log ns2_build.log jist_build.log
   fi
 
 fi
