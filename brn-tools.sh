@@ -108,7 +108,7 @@ if [ "x$CLICKPATH" = "x" ]; then
 fi
 
 if [ "x$BUILDCLICK" = "xyes" ]; then
-  (cd click-brn;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC" /bin/sh brn-conf.sh ns2_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
+  (cd click-brn;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
 fi
 
 (cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
