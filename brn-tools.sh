@@ -99,6 +99,10 @@ BUILDCLICKSCRIPTS=yes
 git submodule init
 git submodule update
 
+for i in `git submodule | awk '{print $2}'`; do
+  (cd $i; git checkout master)
+done
+
 #***********************************************************************
 #******************************** B U I L D ****************************
 #***********************************************************************
