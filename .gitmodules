@@ -16,3 +16,6 @@
 [submodule "jist-brn"]
 	path = jist-brn
 	url = git@gitsar:jist-brn
+[submodule "ns-3-brn"]
+	path = ns-3-brn
+	url = git@gitsar:ns-3-brn
