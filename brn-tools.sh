@@ -23,6 +23,20 @@ FULLFILENAME=$DIR/$FULLFILENAME
 
 GITHOST=gitsar
 
+if [ "x$1" = "xpull" ]; then
+   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
+   echo "brn-tools"
+   CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi
+   exit 0
+fi
+if [ "x$1" = "xpush" ]; then
+   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi); done
+   echo "brn-tools"
+   CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi
+   exit 0
+fi
+
+
 #*******************************************************************************************
 #*************************** G E T   S O U R C E S   ( S T A G E   1 ) *********************
 #*******************************************************************************************
