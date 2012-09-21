@@ -35,6 +35,12 @@ if [ "x$1" = "xpush" ]; then
    CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi
    exit 0
 fi
+if [ "x$1" = "xgui" ]; then
+   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i; git gui); done
+   echo "brn-tools"
+   git gui
+   exit 0
+fi
 
 
 #*******************************************************************************************
