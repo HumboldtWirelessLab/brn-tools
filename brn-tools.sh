@@ -147,7 +147,7 @@ fi
 echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
 echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
 echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$CLICKPATH/ns/:\$BRN_TOOLS_PATH/ns2/lib" >> $DIR/brn-tools.bashrc
-echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$PATH" >> $DIR/brn-tools.bashrc
+echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$BRN_TOOLS_PATH/helper/measurement/bin:\$PATH" >> $DIR/brn-tools.bashrc
 echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
 echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist" >> $DIR/brn-tools.bashrc
 echo "fi" >> $DIR/brn-tools.bashrc
