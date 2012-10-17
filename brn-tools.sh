@@ -18,6 +18,13 @@ case "$SIGN" in
         ;;
 esac
 
+test_cmds()
+{
+  for line in `cat $0 | grep "#CMD" | awk '{print $2}'`; do
+    command -v $line >/dev/null 2>&1 || /usr/bin/pkg-config $line >/dev/null 2>&1 || { echo >&2 "Click requires $line but it's not installed.  Aborting."; return 1; }
+  done 
+}
+
 FULLFILENAME=`basename $0`
 FULLFILENAME=$DIR/$FULLFILENAME
 
@@ -42,6 +49,37 @@ if [ "x$1" = "xgui" ]; then
    exit 0
 fi
 
+#******************************************************************************
+#*************************** C H E C K   S O F T W A R E  *********************
+#******************************************************************************
+
+
+echo "Make sure that you have the following packages:"
+echo " * g++"
+echo " * autoconf"
+echo " * libx11-dev"
+echo " * libxt-dev"
+echo " * libxmu-dev"
+echo " * flex"
+echo " * bison"
+echo ""
+echo "Add following lines to .ssh/config"
+echo "Host gruenau"
+echo "   User username"
+echo "   HostName gruenau.informatik.hu-berlin.de"
+echo ""
+echo "Host gitsar"
+echo "   User username"
+echo "   HostName localhost"
+echo "   ProxyCommand ssh -q gruenau netcat sar 2222"
+echo ""
+
+test_cmds
+
+if [ $? = 1 ]; then
+  exit 1;
+fi
+
 
 #*******************************************************************************************
 #*************************** G E T   S O U R C E S   ( S T A G E   1 ) *********************
@@ -62,31 +100,6 @@ else
   exit $?
 fi  
   
-
-echo "Make sure that you have the following packages:"
-echo " * g++"
-echo " * autoconf"
-echo " * libx11-dev"
-echo " * libxt-dev"
-echo " * libxmu-dev"
-echo " * flex"
-echo " * bison"
-echo ""
-echo "Add following lines to .ssh/config"
-echo "Host gruenau"
-echo "   User username"
-echo "   HostName gruenau.informatik.hu-berlin.de"
-echo "	 LocalForward 23452 sar.informatik.hu-berlin.de:2222"
-echo ""
-echo "Host gitsar"
-echo "   User username"
-echo "   HostName localhost"
-echo "   ProxyCommand ssh -q gruenau netcat sar 2222"
-#echo "   Port 23452"
-echo ""
-echo "Open a terminal and login to gruenau using \"ssh gruenau\". Don't close the terminal until you finish the installation." 
-
-
 if [ "x$1" = "xhelp" ]; then
   exit 0
 fi
@@ -199,3 +212,13 @@ exit 0
 #INFO
 
 #HELP Update NS2: CLICKPATH=/XXX/click-brn CLICKSCRIPTS=/XXX/click-brn-scripts/ sh ./brn-tools.sh
+
+#CMD make
+#CMD gcc
+#CMD g++
+#CMD autoconf
+#CMD flex
+#CMD bison
+#CMD javac
+#CMD ant
+#CMD eierlegendewollmichsau
