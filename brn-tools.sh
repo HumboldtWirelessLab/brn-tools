@@ -23,6 +23,45 @@ FULLFILENAME=$DIR/$FULLFILENAME
 
 GITHOST=gitsar
 
+if [ "x$FULL" = "x1" ]; then
+  DEVELOP=1
+  ENABLE_NS3=1
+  BRNDRIVER=1
+  BRNTESTBED=1
+fi
+
+#*******************************************************************************************
+#********************************** B R N - D R I V E R  ***********************************
+#*******************************************************************************************
+
+if [ "x$1" = "xdriver" ]; then
+  if [ ! -e ../brn-driver ]; then
+    ( cd ..; git clone git@$GITHOST:brn-driver )
+  fi
+
+  ( cd ../brn-driver; sh ./brn-driver.sh init)
+
+  exit 0
+fi
+
+#*******************************************************************************************
+#********************************** B R N - T E S T B E D **********************************
+#*******************************************************************************************
+
+if [ "x$1" = "xtestbed" ]; then
+  if [ ! -e ../brn-testbed ]; then
+    ( cd ..; git clone git@$GITHOST:brn-testbed )
+  fi
+
+  ( cd ../brn-testbed; sh ./brn-testbed.sh )
+
+  exit 0
+fi
+
+#*******************************************************************************************
+#******************************************* U P D A T E ***********************************
+#*******************************************************************************************
+
 if [ "x$1" = "xpull" ]; then
    for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
    echo "brn-tools"
@@ -42,7 +81,6 @@ if [ "x$1" = "xgui" ]; then
    exit 0
 fi
 
-
 #*******************************************************************************************
 #*************************** G E T   S O U R C E S   ( S T A G E   1 ) *********************
 #*******************************************************************************************
@@ -60,8 +98,7 @@ else
   echo "Start build"
   (cd ./brn-tools; sh ./brn-tools.sh)
   exit $?
-fi  
-  
+fi
 
 echo "Make sure that you have the following packages:"
 echo " * g++"
@@ -181,6 +218,14 @@ else
     rm -f test.log click_build.log ns2_build.log jist_build.log
   fi
 
+fi
+
+if [ "x$BRNDRIVER" = "x1" ]; then
+  $0 driver
+fi
+
+if [ "x$BRNTESTBED" = "x1" ]; then
+  $0 testbed
 fi
 
 exit 0
