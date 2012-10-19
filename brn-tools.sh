@@ -75,7 +75,7 @@ if [ "x$1" = "xpull" ]; then
      git submodule update
    fi
    for i in `git submodule | awk '{print $2}'`; do
-     (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "x(no" ]; then git checkout master; fi )
+     (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" = "x(no" ]; then git checkout master; fi )
    done
 
    for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
