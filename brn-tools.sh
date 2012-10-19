@@ -95,6 +95,18 @@ if [ "x$1" = "xgui" ]; then
    git gui
    exit 0
 fi
+if [ "x$1" = "xstatus" ]; then
+   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i; git status); done
+   echo "brn-tools"
+   git status
+   exit 0
+fi
+if [ "x$1" = "xallstatus" ]; then
+   sh $0 status
+   if [ -e ../brn-driver/brn-driver.sh ]; then ( cd ../brn-driver; sh ./brn-driver.sh status); fi
+   if [ -e ../brn-testbed/brn-testbed.sh ]; then ( cd ../brn-testbed; sh ./brn-testbed.sh status); fi
+   exit 0
+fi
 
 #******************************************************************************
 #*************************** C H E C K   S O F T W A R E  *********************
