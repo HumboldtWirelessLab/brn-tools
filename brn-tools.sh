@@ -234,11 +234,11 @@ else
 fi
 
 if [ "x$BRNDRIVER" = "x1" ]; then
-  $0 driver
+  sh $0 driver
 fi
 
 if [ "x$BRNTESTBED" = "x1" ]; then
-  $0 testbed
+  sh $0 testbed
 fi
 
 exit 0
