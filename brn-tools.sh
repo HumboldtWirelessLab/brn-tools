@@ -166,12 +166,16 @@ echo "Use $CPUS cpus"
 BUILDCLICK=yes
 BUILDCLICKSCRIPTS=yes
 
-git submodule init
-git submodule update
+if [ ! -e click-brn/.git ]; then
+  git submodule init
+  git submodule update
+fi
 
 for i in `git submodule | awk '{print $2}'`; do
   (cd $i; git checkout master)
 done
+
+chmod 600 helper/host/etc/keys/id_dsa
 
 #***********************************************************************
 #******************************** B U I L D ****************************
