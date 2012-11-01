@@ -259,7 +259,11 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
 fi
 
 echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
-echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
+if [ -e $DIR/click-brn-extern ]; then
+  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn-extern/" >> $DIR/brn-tools.bashrc
+else
+  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
+fi
 echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$CLICKPATH/ns/:\$BRN_TOOLS_PATH/ns2/lib" >> $DIR/brn-tools.bashrc
 echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$BRN_TOOLS_PATH/helper/measurement/bin:\$PATH" >> $DIR/brn-tools.bashrc
 echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
