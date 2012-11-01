@@ -251,7 +251,7 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
     fi
   fi
 
-  (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build)
+  (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build 2>&1 | tee ns3_build.log)
   echo "export NS3_HOME=$BRN_TOOLS_PATH/ns-3-brn/" > $DIR/ns-3-brn/bashrc.ns3
 fi
 
@@ -292,7 +292,7 @@ else
     echo "Detect failures. Please send test.log, click_build.log, jist_build.log and ns2_build.log (hwl-team)."
     exit 1
   else
-    rm -f test.log click_build.log ns2_build.log jist_build.log
+    rm -f test.log click_build.log ns2_build.log jist_build.log ns3_build.log
   fi
 
 fi
