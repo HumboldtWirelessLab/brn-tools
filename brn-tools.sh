@@ -139,6 +139,7 @@ echo " * libxt-dev"
 echo " * libxmu-dev"
 echo " * flex"
 echo " * bison"
+echo " * bc "
 echo ""
 echo "Add following lines to .ssh/config"
 echo "Host gruenau"
@@ -329,3 +330,7 @@ exit 0
 #CMD bison
 #CMD javac
 #CMD ant
+#CMD bc
+#CMD x11
+#CMD xt
+#CMD xmu
