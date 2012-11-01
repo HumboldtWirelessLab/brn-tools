@@ -292,6 +292,6 @@ exit 0
 #CMD javac
 #CMD ant
 #CMD bc
-#CMD libx11-dev
-#CMD libxt-dev
-#CMD libxmu-dev
+#CMD x11
+#CMD xt
+#CMD xmu
