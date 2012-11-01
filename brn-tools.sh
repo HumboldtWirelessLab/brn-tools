@@ -290,3 +290,4 @@ exit 0
 #CMD bison
 #CMD javac
 #CMD ant
+#CMD bc
