@@ -254,7 +254,7 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
     fi
   fi
 
-  (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build 2>&1 | tee ns3_build.log)
+  (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build) 2>&1 | tee ns3_build.log
   echo "export NS3_HOME=$BRN_TOOLS_PATH/ns-3-brn/" > $DIR/ns-3-brn/bashrc.ns3
 fi
 
