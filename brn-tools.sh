@@ -224,6 +224,9 @@ chmod 600 helper/host/etc/keys/id_dsa
 if [ "x$CLICKPATH" = "x" ]; then
   if [ -e click-extern ]; then
     CLICKPATH=$DIR/click-extern
+    if [ "x$DISABLE_TEST" = "x" ]; then
+      DISABLE_TEST=1
+    fi
   else
     CLICKPATH=$DIR/click-brn
   fi
