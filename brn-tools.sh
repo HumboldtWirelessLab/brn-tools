@@ -65,38 +65,57 @@ if [ "x$1" = "xtestbed" ]; then
   exit 0
 fi
 
+if [ "x$CLICKURL" != "x" ]; then
+  git clone $CLICKURL click-extern
+fi
+
+if [ "x$NS3URL" != "x" ]; then
+  git clone $NS3URL ns-3-extern
+fi
+
 #*******************************************************************************************
 #******************************************* U P D A T E ***********************************
 #*******************************************************************************************
+
+if [ "x$1" = "xpull" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" = "xstatus" ]; then
+   GITSUBDIRS=`git submodule | awk '{print $2}'`
+   if [ -e ns-3-extern/.git ]; then
+     GITSUBDIRS="$GITSUBDIRS ns-3-extern"
+   fi
+   if [ -e ns-3-extern/.git ]; then
+     GITSUBDIRS="$GITSUBDIRS click-extern"
+   fi
+fi
 
 if [ "x$1" = "xpull" ]; then
    if [ ! -e click-brn/.git ]; then
      git submodule init
      git submodule update
    fi
-   for i in `git submodule | awk '{print $2}'`; do
+
+   for i in $GITSUBDIRS; do
      (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" = "x(no" ]; then git checkout master; fi )
    done
 
-   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
+   for i in $GITSUBDIRS; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
    echo "brn-tools"
    CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi
    exit 0
 fi
 if [ "x$1" = "xpush" ]; then
-   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi); done
+   for i in $GITSUBDIRS; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi); done
    echo "brn-tools"
    CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi
    exit 0
 fi
 if [ "x$1" = "xgui" ]; then
-   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i; git gui); done
+   for i in $GITSUBDIRS; do echo $i; (cd $i; git gui); done
    echo "brn-tools"
    git gui
    exit 0
 fi
 if [ "x$1" = "xstatus" ]; then
-   for i in `git submodule | awk '{print $2}'`; do echo $i; (cd $i; git status); done
+   for i in $GITSUBDIRS; do echo $i; (cd $i; git status); done
    echo "brn-tools"
    git status
    exit 0
@@ -202,11 +221,16 @@ chmod 600 helper/host/etc/keys/id_dsa
 #***********************************************************************
 
 if [ "x$CLICKPATH" = "x" ]; then
-  CLICKPATH=$DIR/click-brn
+  if [ -e click-extern ]; then
+    CLICKPATH=$DIR/click-extern
+  else
+    CLICKPATH=$DIR/click-brn
+  fi
 fi
 
 if [ "x$BUILDCLICK" = "xyes" ]; then
-  (cd click-brn;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
+  if [ ! -f click-extern
+  (cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
 fi
 
 (cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
@@ -214,7 +238,17 @@ fi
 (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
 
 if [ "x$ENABLE_NS3" = "x1" ]; then
-  (cd ns-3-brn; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build)
+  if [ "x$NS3PATH" = "x" ]; then
+    if [ -e ns-3-extern ]; then
+      NS3PATH=$DIR/ns-3-extern
+      NS3PATHEXT=ns-3-extern
+    else
+      NS3PATH=$DIR/ns-3-brn
+      NS3PATHEXT=ns-3-brn
+    fi
+  fi
+
+  (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build)
   echo "export NS3_HOME=$BRN_TOOLS_PATH/ns-3-brn/" > $DIR/ns-3-brn/bashrc.ns3
 fi
 
@@ -225,11 +259,14 @@ echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/t
 echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
 echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist" >> $DIR/brn-tools.bashrc
 echo "fi" >> $DIR/brn-tools.bashrc
-echo "if [ -e \$BRN_TOOLS_PATH/ns-3-brn/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
-echo "  . \$BRN_TOOLS_PATH/ns-3-brn/bashrc.ns3" >> $DIR/brn-tools.bashrc
+if [ "x$NS3PATHEXT" = "x" ]; then
+  echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
+  echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
+else
+  echo "if [ -e \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
+  echo "  . \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3" >> $DIR/brn-tools.bashrc
+fi
 echo "fi" >> $DIR/brn-tools.bashrc
-
-cat $FULLFILENAME | grep "^#INFO" | sed -e "s/#INFO[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
   echo "Test disabled"
@@ -264,6 +301,8 @@ fi
 if [ "x$BRNTESTBED" = "x1" ]; then
   sh $0 testbed
 fi
+
+cat $FULLFILENAME | grep "^#INFO" | sed -e "s/#INFO[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
 
 exit 0
 
