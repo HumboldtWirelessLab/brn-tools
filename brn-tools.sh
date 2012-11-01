@@ -230,7 +230,9 @@ if [ "x$CLICKPATH" = "x" ]; then
 fi
 
 if [ "x$BUILDCLICK" = "xyes" ]; then
-  if [ ! -f click-extern
+  if [ ! -f $CLICKPATH/brn-conf.sh ]; then
+    cp $DIR/click-brn/brn-conf.sh $CLICKPATH
+  fi
   (cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
 fi
 
