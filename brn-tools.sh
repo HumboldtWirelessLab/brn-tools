@@ -46,6 +46,17 @@ if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
   exit 0
 fi
 
+CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
+
+if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
+  echo "Different GITVERSIONS! Update bashrc ?"
+fi
+
+if [ "x$1" = "xhelp" ]; then
+  cat $FULLFILENAME | grep "^#HELP" | sed -e "s/#HELP[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
+  exit 0
+fi
+
 #*******************************************************************************************
 #********************************** B R N - D R I V E R  ***********************************
 #*******************************************************************************************
@@ -136,6 +147,10 @@ if [ "x$1" = "xallstatus" ]; then
    exit 0
 fi
 
+if [ "x$1" != "x" ]; then
+  sh $0 help
+  exit 0
+fi
 #******************************************************************************
 #*************************** C H E C K   S O F T W A R E  *********************
 #******************************************************************************
@@ -184,10 +199,6 @@ else
   echo "Start build"
   (cd ./brn-tools; sh ./brn-tools.sh)
   exit $?
-fi
-
-if [ "x$1" = "xhelp" ]; then
-  exit 0
 fi
 
 if [ "x$DEVELOP" = "x" ]; then
