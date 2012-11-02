@@ -259,8 +259,8 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
 fi
 
 echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
-if [ -e $DIR/click-brn-extern ]; then
-  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn-extern/" >> $DIR/brn-tools.bashrc
+if [ -e $DIR/click-extern ]; then
+  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-extern/" >> $DIR/brn-tools.bashrc
 else
   echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
 fi
