@@ -280,7 +280,7 @@ echo "fi" >> $DIR/brn-tools.bashrc
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
   echo "Test disabled"
-  rm -f click_build.log ns2_build.log
+  rm -f click_build.log ns2_build.log jist_build.log ns3_build.log
 else
   echo "Start Tests"
 
