@@ -37,6 +37,26 @@ if [ "x$FULL" = "x1" ]; then
   BRNTESTBED=1
 fi
 
+#*********************************************************************************
+#********************************** C H E C K  ***********************************
+#*********************************************************************************
+
+if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
+  echo "Rebuild brn-tools. You are sure ? If so, remove brn-tools.bashrc!"
+  exit 0
+fi
+
+CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
+
+if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
+  echo "Different GITVERSIONS! Update bashrc ?"
+fi
+
+if [ "x$1" = "xhelp" ]; then
+  cat $FULLFILENAME | grep "^#HELP" | sed -e "s/#HELP[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
+  exit 0
+fi
+
 #*******************************************************************************************
 #********************************** B R N - D R I V E R  ***********************************
 #*******************************************************************************************
@@ -127,6 +147,10 @@ if [ "x$1" = "xallstatus" ]; then
    exit 0
 fi
 
+if [ "x$1" != "x" ]; then
+  sh $0 help
+  exit 0
+fi
 #******************************************************************************
 #*************************** C H E C K   S O F T W A R E  *********************
 #******************************************************************************
@@ -175,10 +199,6 @@ else
   echo "Start build"
   (cd ./brn-tools; sh ./brn-tools.sh)
   exit $?
-fi
-
-if [ "x$1" = "xhelp" ]; then
-  exit 0
 fi
 
 if [ "x$DEVELOP" = "x" ]; then
@@ -255,12 +275,12 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
   fi
 
   (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build) 2>&1 | tee ns3_build.log
-  echo "export NS3_HOME=$BRN_TOOLS_PATH/ns-3-brn/" > $DIR/ns-3-brn/bashrc.ns3
+  echo "export NS3_HOME=\$BRN_TOOLS_PATH/$NS3PATHEXT/" > $DIR/$NS3PATHEXT/bashrc.ns3
 fi
 
 echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
-if [ -e $DIR/click-brn-extern ]; then
-  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn-extern/" >> $DIR/brn-tools.bashrc
+if [ -e $DIR/click-extern ]; then
+  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-extern/" >> $DIR/brn-tools.bashrc
 else
   echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
 fi
@@ -280,7 +300,7 @@ echo "fi" >> $DIR/brn-tools.bashrc
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
   echo "Test disabled"
-  rm -f click_build.log ns2_build.log
+  rm -f click_build.log ns2_build.log jist_build.log ns3_build.log
 else
   echo "Start Tests"
 
