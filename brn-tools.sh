@@ -22,7 +22,7 @@ test_cmds()
 {
   for line in `cat $0 | grep "#CMD" | grep -v "line" | awk '{print $2}'`; do
     command -v $line >/dev/null 2>&1 || /usr/bin/pkg-config $line >/dev/null 2>&1 || { echo >&2 "Click requires $line but it's not installed.  Aborting."; return 1; }
-  done 
+  done
 }
 
 FULLFILENAME=`basename $0`
@@ -42,7 +42,7 @@ fi
 #*********************************************************************************
 
 if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
-  echo "Rebuild brn-tools. You are sure ? If so, remove brn-tools.bashrc!"
+  echo "Rebuild brn-tools. Are you sure? If so, remove brn-tools.bashrc!"
   exit 0
 fi
 
