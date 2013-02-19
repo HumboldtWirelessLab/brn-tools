@@ -46,6 +46,11 @@ if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
   exit 0
 fi
 
+if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ]; then
+  echo "Build brn-tools!!!! Start $0 without args!"
+  exit 0
+fi
+
 CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
 
 if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
