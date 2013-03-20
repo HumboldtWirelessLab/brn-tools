@@ -29,7 +29,7 @@ test_cmds()
 
 test_ant()
 {
-  command -v ant >/dev/null 2>&1 || /usr/bin/pkg-config ant >/dev/null 2>&1 || { echo >&2 "Ant not installed. Disable JIST"; DISABLE_JIST=1 }
+  command -v ant >/dev/null 2>&1 || /usr/bin/pkg-config ant >/dev/null 2>&1 || { echo >&2 "Ant not installed. Disable JIST"; DISABLE_JIST=1; }
 }
 
 FULLFILENAME=`basename $0`
@@ -278,8 +278,10 @@ fi
 
 (cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
 
-(cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
-
+if [ $DISABLE_JIST -eq 0 ]; then
+  (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
+fi
+ 
 if [ "x$ENABLE_NS3" = "x1" ]; then
   if [ "x$NS3PATH" = "x" ]; then
     if [ -e ns-3-extern ]; then
