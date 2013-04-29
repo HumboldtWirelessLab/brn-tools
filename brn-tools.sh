@@ -70,6 +70,7 @@ if [ "x$FULL" = "x1" ]; then
   BRNTESTBED=1
 fi
 
+# toggle dependency checking
 if [ "x$DEPS" = "x1" ]; then
   CHECK_DEPS=1
 fi
