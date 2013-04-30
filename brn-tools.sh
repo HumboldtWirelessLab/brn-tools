@@ -20,16 +20,42 @@ esac
 
 DISABLE_JIST=0
 
-test_cmds()
-{
-  for line in `cat $0 | grep "#CMD" | grep -v "line" | awk '{print $2}'`; do
-    command -v $line >/dev/null 2>&1 || /usr/bin/pkg-config $line >/dev/null 2>&1 || { echo >&2 "Click requires $line but it's not installed.  Aborting."; return 1; }
-  done
-}
+#test_cmds()
+#{
+#  for line in `cat $0 | grep "#CMD" | grep -v "line" | awk '{print $2}'`; do
+#    command -v $line >/dev/null 2>&1 || /usr/bin/pkg-config $line >/dev/null 2>&1 || { echo >&2 "Click requires $line but it's not installed.  Aborting."; return 1; }
+#  done
+#}
 
 test_ant()
 {
   command -v ant >/dev/null 2>&1 || /usr/bin/pkg-config ant >/dev/null 2>&1 || { echo >&2 "Ant not installed. Disable JIST"; DISABLE_JIST=1; }
+}
+
+resolve_deps()
+{
+  echo "Checking dependencies...\n"
+
+  command -v gdebi >/dev/null 2>&1
+  if [ $? = 0 ]; then
+    sudo gdebi $DIR/brn-tools.deb
+    return 0;
+  fi
+
+  command -v dpkg >/dev/null 2>&1
+  if [ $? = 0 ]; then
+    sudo dpkg --install $DIR/brn-tools.deb
+
+    # try to install missing dependencies via apt-get
+    sudo apt-get -f install
+    if [ $? = 0 ]; then
+      return 0;
+    else
+      return 1;
+    fi
+
+  fi
+
 }
 
 FULLFILENAME=`basename $0`
@@ -42,6 +68,11 @@ if [ "x$FULL" = "x1" ]; then
   ENABLE_NS3=1
   BRNDRIVER=1
   BRNTESTBED=1
+fi
+
+# toggle dependency checking
+if [ "x$DEPS" = "x1" ]; then
+  CHECK_DEPS=1
 fi
 
 #*********************************************************************************
@@ -188,11 +219,36 @@ echo "   HostName localhost"
 echo "   ProxyCommand ssh -q gruenau netcat sar 2222"
 echo ""
 
-test_cmds
+#test_cmds
 test_ant
 
 if [ $? = 1 ]; then
   exit 1;
+fi
+
+# check depencies
+if [ "x$CHECK_DEPS" = "x1" ]; then
+
+  # check for depency file
+  if [ -f $DIR/brn-tools.deb ]; then
+    echo "Build package found"
+    echo "Do you want to check for build dependencies now? (y/n) -Sudo required!-"
+    read DEP_CHECK
+
+    if [ "x$DEP_CHECK" = "xy" ] || [ "x$DEP_CHECK" = "xY" ]; then
+      resolve_deps
+
+      if [ $? = 1 ]; then
+        echo "\nCould not resolve dependencies."
+        echo "Please resolve possible depency issues manually!\n"
+      fi
+    fi
+
+  #else
+  #  echo "\nNo build package found."
+  #  echo "Please resolve possible depency issues manually!\n"
+  fi
+
 fi
 
 #*******************************************************************************************
@@ -281,7 +337,7 @@ fi
 if [ $DISABLE_JIST -eq 0 ]; then
   (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
 fi
- 
+
 if [ "x$ENABLE_NS3" = "x1" ]; then
   if [ "x$NS3PATH" = "x" ]; then
     if [ -e ns-3-extern ]; then
