@@ -325,6 +325,11 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   if [ ! -f $CLICKPATH/brn-conf.sh ]; then
     cp $DIR/click-brn/brn-conf.sh $CLICKPATH
   fi
+
+  if [ "x$PROFILE" = "x1" ]; then
+    XCFLAGS="-pg $XCFLAGS"
+  fi
+
   if [ $DISABLE_JIST -eq 0 ]; then
 	(cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
   else
@@ -332,7 +337,7 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   fi
 fi
 
-(cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
+(cd brn-ns2-click; XCFLAGS="$XCFLAGS" CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
 
 if [ $DISABLE_JIST -eq 0 ]; then
   (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
