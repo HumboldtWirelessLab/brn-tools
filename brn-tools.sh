@@ -374,13 +374,13 @@ if [ "x$NS3PATHEXT" = "x" ]; then
   if [ "x$NS3PATH" != "x" ]; then
     echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
     echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
+    echo "fi" >> $DIR/brn-tools.bashrc
   fi
 else
   echo "if [ -e \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
   echo "  . \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3" >> $DIR/brn-tools.bashrc
+  echo "fi" >> $DIR/brn-tools.bashrc
 fi
-
-echo "fi" >> $DIR/brn-tools.bashrc
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
   echo "Test disabled"
