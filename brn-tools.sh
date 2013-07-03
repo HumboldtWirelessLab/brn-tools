@@ -326,7 +326,7 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
     cp $DIR/click-brn/brn-conf.sh $CLICKPATH
   fi
 
-  if [ "x$PROFILE" = "x1" ]; then
+  if [ "x$GPROF" = "x1" ]; then
     XCFLAGS="-pg $XCFLAGS"
   fi
 
