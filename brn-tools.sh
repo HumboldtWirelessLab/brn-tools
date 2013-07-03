@@ -325,6 +325,11 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   if [ ! -f $CLICKPATH/brn-conf.sh ]; then
     cp $DIR/click-brn/brn-conf.sh $CLICKPATH
   fi
+
+  if [ "x$PROFILE" = "x1" ]; then
+    XCFLAGS="-pg $XCFLAGS"
+  fi
+
   if [ $DISABLE_JIST -eq 0 ]; then
 	(cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
   else
@@ -332,7 +337,7 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   fi
 fi
 
-(cd brn-ns2-click; CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
+(cd brn-ns2-click; XCFLAGS="$XCFLAGS" CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
 
 if [ $DISABLE_JIST -eq 0 ]; then
   (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
@@ -350,7 +355,7 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
   fi
 
   (cd $NS3PATH; ./waf configure --with-nsclick=$CLICKPATH --enable-examples; ./waf build) 2>&1 | tee ns3_build.log
-  echo "export NS3_HOME=\$BRN_TOOLS_PATH/$NS3PATHEXT/" > $DIR/$NS3PATHEXT/bashrc.ns3
+  echo "export NS3_HOME=$NS3PATH/" > $NS3PATH/bashrc.ns3
 fi
 
 echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
@@ -364,13 +369,17 @@ echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/t
 echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
 echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist" >> $DIR/brn-tools.bashrc
 echo "fi" >> $DIR/brn-tools.bashrc
+
 if [ "x$NS3PATHEXT" = "x" ]; then
-  echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
-  echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
+  if [ "x$NS3PATH" != "x" ]; then
+    echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
+    echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
+  fi
 else
   echo "if [ -e \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
   echo "  . \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3" >> $DIR/brn-tools.bashrc
 fi
+
 echo "fi" >> $DIR/brn-tools.bashrc
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
