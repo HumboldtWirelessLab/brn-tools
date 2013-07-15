@@ -328,6 +328,10 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
 
   if [ "x$GPROF" = "x1" ]; then
     XCFLAGS="-pg $XCFLAGS"
+  else
+    if [ "x$NOOPT" != "x1" ]; then
+      XCFLAGS="$XCFLAGS -O2"
+    fi
   fi
 
   if [ $DISABLE_JIST -eq 0 ]; then
