@@ -60,10 +60,7 @@ resolve_deps()
       return 0;
     fi
   fi
-  
-  echo "Could not resolve dependencies."
-  echo "Please resolve possible depency issues manually!\n"
-  
+
   return 1;
 }
 
@@ -235,8 +232,14 @@ echo "Do you want to check for build dependencies now? (y/n) -Sudo required!-"
 read DEP_CHECK
 if [ "x$DEP_CHECK" = "xy" ] || [ "x$DEP_CHECK" = "xY" ]; then
   resolve_deps "$deps"
+  if [ $? = 1 ]; then
+    echo "Could not resolve dependencies."
+    echo "Please resolve possible dependency issues manually!\n"
+    echo "Enter to continue with installation"
+    read foo
+  fi
 else 
-  echo "Please resolve possible depency issues manually!"
+  echo "Please resolve possible dependency issues manually!"
   echo "Enter to continue with installation"
   read foo
 fi
