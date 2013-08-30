@@ -34,28 +34,34 @@ test_ant()
 
 resolve_deps()
 {
+  deps="$1"
+
   echo "Checking dependencies...\n"
 
-  command -v gdebi >/dev/null 2>&1
+  # for debian based distros
+  command -v apt-get >/dev/null 2>&1
   if [ $? = 0 ]; then
-    sudo gdebi $DIR/brn-tools.deb
-    return 0;
-  fi
-
-  command -v dpkg >/dev/null 2>&1
-  if [ $? = 0 ]; then
-    sudo dpkg --install $DIR/brn-tools.deb
-
-    # try to install missing dependencies via apt-get
-    sudo apt-get -f install
+    echo "Found apt-get."
+    echo "Installing dependencies..."
+	sudo apt-get install $deps
     if [ $? = 0 ]; then
       return 0;
-    else
-      return 1;
     fi
-
   fi
 
+  # for other distros with gdebi
+  # FIXME: make a list of urls for debs, download debs, install debs with gdebi
+  command -v gdebi >/dev/null 2>&1
+  if [ $? = 0 ] && [ -f $DIR/brn-tools.deb ]; then
+    echo "Found gdebi and a build package."
+    echo "Installing dependencies..."
+    sudo gdebi $DIR/brn-tools.deb
+    if [ $? = 0 ]; then
+      return 0;
+    fi
+  fi
+
+  return 1;
 }
 
 FULLFILENAME=`basename $0`
@@ -197,18 +203,13 @@ fi
 #******************************************************************************
 #*************************** C H E C K   S O F T W A R E  *********************
 #******************************************************************************
+deps="g++ clang autoconf libx11-dev libxt-dev libxmu-dev flex bison bc"
 
 echo "Make sure that you have the following packages:"
-echo " * g++"
-echo " * autoconf"
-echo " * libx11-dev"
-echo " * libxt-dev"
-echo " * libxmu-dev"
-echo " * flex"
-echo " * bison"
-echo " * bc"
-echo " * wget"
-echo " * python 2"
+for package in $deps; do
+  echo " * " $package
+done
+
 echo ""
 echo "Add following lines to .ssh/config"
 echo "Host gruenau"
@@ -228,29 +229,20 @@ if [ $? = 1 ]; then
   exit 1;
 fi
 
-# check depencies
-if [ "x$CHECK_DEPS" = "x1" ]; then
-
-  # check for depency file
-  if [ -f $DIR/brn-tools.deb ]; then
-    echo "Build package found"
-    echo "Do you want to check for build dependencies now? (y/n) -Sudo required!-"
-    read DEP_CHECK
-
-    if [ "x$DEP_CHECK" = "xy" ] || [ "x$DEP_CHECK" = "xY" ]; then
-      resolve_deps
-
-      if [ $? = 1 ]; then
-        echo "\nCould not resolve dependencies."
-        echo "Please resolve possible depency issues manually!\n"
-      fi
-    fi
-
-  #else
-  #  echo "\nNo build package found."
-  #  echo "Please resolve possible depency issues manually!\n"
+echo "Do you want to check for build dependencies now? (y/n) -Sudo required!-"
+read DEP_CHECK
+if [ "x$DEP_CHECK" = "xy" ] || [ "x$DEP_CHECK" = "xY" ]; then
+  resolve_deps "$deps"
+  if [ $? = 1 ]; then
+    echo "Could not resolve dependencies."
+    echo "Please resolve possible dependency issues manually!\n"
+    echo "Enter to continue with installation"
+    read foo
   fi
-
+else
+  echo "Please resolve possible dependency issues manually!"
+  echo "Enter to continue with installation"
+  read foo
 fi
 
 #*******************************************************************************************
