@@ -19,3 +19,6 @@
 [submodule "ns-3-brn"]
 	path = ns-3-brn
 	url = git@gitsar:ns-3-brn
+[submodule "click-brn-libs"]
+	path = click-brn-libs
+	url = git@gitsar:click-brn-libs
