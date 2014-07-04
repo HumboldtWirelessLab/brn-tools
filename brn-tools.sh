@@ -157,9 +157,15 @@ if [ "x$1" = "xpull" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" =
 fi
 
 if [ "x$1" = "xpull" ]; then
+   git pull
+
    if [ ! -e click-brn/.git ]; then
      git submodule init
      git submodule update
+   fi
+
+   if [ ! -e click-brn-libs/.git ]; then
+     (cd click-brn-libs/; git submodule init; git submodule update; git checkout master)
    fi
 
    for i in $GITSUBDIRS; do
@@ -316,6 +322,7 @@ if [ "x$CLICKPATH" = "x" ]; then
 fi
 
 if [ "x$BUILDCLICK" = "xyes" ]; then
+  #copy to build tools
   if [ ! -f $CLICKPATH/brn-conf.sh ]; then
     cp $DIR/click-brn/brn-conf.sh $CLICKPATH
   fi
