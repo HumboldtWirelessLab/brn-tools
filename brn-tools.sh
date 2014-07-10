@@ -64,6 +64,43 @@ resolve_deps()
   return 1;
 }
 
+build_bashrc()
+{
+  NEWBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
+
+  echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
+  echo "export BRNTOOLSGITVERSION=$NEWBRNTOOLSGITVERSION" >> $DIR/brn-tools.bashrc
+
+  if [ -e $DIR/click-extern ]; then
+    echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-extern/" >> $DIR/brn-tools.bashrc
+  else
+    echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
+  fi
+  echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$CLICKPATH/ns/:\$BRN_TOOLS_PATH/ns2/lib:\$BRN_TOOLS_PATH/click-brn-libs/lib" >> $DIR/brn-tools.bashrc
+  echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$BRN_TOOLS_PATH/helper/measurement/bin:\$BRN_TOOLS_PATH/helper/host/bin:\$PATH" >> $DIR/brn-tools.bashrc
+  echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
+  echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist" >> $DIR/brn-tools.bashrc
+  echo "fi" >> $DIR/brn-tools.bashrc
+
+  if [ "x$NS3PATHEXT" = "x" ]; then
+    if [ -f $BRN_TOOLS_PATH/ns-3-brn/bashrc.ns3 ]; then
+      NS3PATHEXT=ns-3-brn
+    fi
+  fi
+
+  if [ "x$NS3PATHEXT" = "x" ]; then
+    if [ "x$NS3PATH" != "x" ]; then
+      echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
+      echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
+      echo "fi" >> $DIR/brn-tools.bashrc
+    fi
+  else
+    echo "if [ -e \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
+    echo "  . \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3" >> $DIR/brn-tools.bashrc
+    echo "fi" >> $DIR/brn-tools.bashrc
+  fi
+}
+
 FULLFILENAME=`basename $0`
 FULLFILENAME=$DIR/$FULLFILENAME
 
@@ -84,6 +121,23 @@ fi
 #*********************************************************************************
 #********************************** C H E C K  ***********************************
 #*********************************************************************************
+if [ "x$1" = "xbashrc" ]; then
+  build_bashrc
+  exit 0
+fi
+
+CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
+
+if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
+  echo "Different GITVERSIONS! Update bashrc !"
+  cp brn-tools.bashrc brn-tools.bashrc.old
+  sh $0 bashrc
+fi
+
+if [ "x$1" = "xhelp" ]; then
+  cat $FULLFILENAME | grep "^#HELP" | sed -e "s/#HELP[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
+  exit 0
+fi
 
 if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
   echo "Rebuild brn-tools. Are you sure? If so, remove brn-tools.bashrc!"
@@ -95,16 +149,6 @@ if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ]; then
   exit 0
 fi
 
-CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
-
-if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
-  echo "Different GITVERSIONS! Update bashrc ?"
-fi
-
-if [ "x$1" = "xhelp" ]; then
-  cat $FULLFILENAME | grep "^#HELP" | sed -e "s/#HELP[[:space:]]*//g" -e "s#TARGETDIR#$DIR#g"
-  exit 0
-fi
 
 #*******************************************************************************************
 #********************************** B R N - D R I V E R  ***********************************
@@ -363,29 +407,7 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
   echo "export NS3_HOME=$NS3PATH/" > $NS3PATH/bashrc.ns3
 fi
 
-echo "export BRN_TOOLS_PATH=$DIR" > $DIR/brn-tools.bashrc
-if [ -e $DIR/click-extern ]; then
-  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-extern/" >> $DIR/brn-tools.bashrc
-else
-  echo "export CLICKPATH=\$BRN_TOOLS_PATH/click-brn/" >> $DIR/brn-tools.bashrc
-fi
-echo "export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$CLICKPATH/ns/:\$BRN_TOOLS_PATH/ns2/lib" >> $DIR/brn-tools.bashrc
-echo "export PATH=\$BRN_TOOLS_PATH/ns2/bin/:\$CLICKPATH/userlevel/:\$CLICKPATH/tools/click-align/:\$BRN_TOOLS_PATH/helper/simulation/bin/:\$BRN_TOOLS_PATH/helper/evaluation/bin:\$BRN_TOOLS_PATH/helper/measurement/bin:\$PATH" >> $DIR/brn-tools.bashrc
-echo "if [ -e \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist ]; then" >> $DIR/brn-tools.bashrc
-echo "  . \$BRN_TOOLS_PATH/jist-brn/brn-install/bashrc.jist" >> $DIR/brn-tools.bashrc
-echo "fi" >> $DIR/brn-tools.bashrc
-
-if [ "x$NS3PATHEXT" = "x" ]; then
-  if [ "x$NS3PATH" != "x" ]; then
-    echo "if [ -e $NS3PATH/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
-    echo "  . $NS3PATH/bashrc.ns3" >> $DIR/brn-tools.bashrc
-    echo "fi" >> $DIR/brn-tools.bashrc
-  fi
-else
-  echo "if [ -e \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3 ]; then" >> $DIR/brn-tools.bashrc
-  echo "  . \$BRN_TOOLS_PATH/$NS3PATHEXT/bashrc.ns3" >> $DIR/brn-tools.bashrc
-  echo "fi" >> $DIR/brn-tools.bashrc
-fi
+build_bashrc
 
 if [ "x$DISABLE_TEST" = "x1" ]; then
   echo "Test disabled"
