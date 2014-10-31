@@ -128,7 +128,7 @@ fi
 
 CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
 
-if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ]; then
+if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ] && [ -f $DIR/brn-tools.bashrc ]; then
   echo "Different GITVERSIONS! Update bashrc !"
   cp brn-tools.bashrc brn-tools.bashrc.old
   sh $0 bashrc
