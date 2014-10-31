@@ -128,10 +128,17 @@ fi
 
 CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
 
+#if diff gitversion just reread the bashrc first
+if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ] && [ -f $DIR/brn-tools.bashrc ]; then
+  . $DIR/brn-tools.bashrc
+fi
+
+#if it is still different -> rebuild
 if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ] && [ -f $DIR/brn-tools.bashrc ]; then
   echo "Different GITVERSIONS! Update bashrc !"
   cp brn-tools.bashrc brn-tools.bashrc.old
   sh $0 bashrc
+  . $DIR/brn-tools.bashrc
 fi
 
 if [ "x$1" = "xhelp" ]; then
