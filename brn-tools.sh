@@ -101,21 +101,22 @@ build_bashrc()
   fi
 }
 
+#*********************************************************************************
+#*************************   S E T   U R L S   ***********************************
+#*********************************************************************************
+
 FULLFILENAME=`basename $0`
 FULLFILENAME=$DIR/$FULLFILENAME
 
-GITHOST=gitsar
 
-if [ "x$FULL" = "x1" ]; then
-  DEVELOP=1
-  ENABLE_NS3=1
-  BRNDRIVER=1
-  BRNTESTBED=1
-fi
+if [ -f $DIR/.git/config ]; then
+  GITURL_BRNTOOLS=`cat $DIR/.git/config  | grep -A 2 "\[remote" | grep url | awk '{print $3}'`
 
-# toggle dependency checking
-if [ "x$DEPS" = "x1" ]; then
-  CHECK_DEPS=1
+  GITURL=`echo $GITURL_BRNTOOLS | awk -F: '{print $1}'`
+
+  GITHOST=`echo $GITURL | awk -F@ '{print $2}'`
+else
+  GITURL="git@gitsar"
 fi
 
 #*********************************************************************************
@@ -126,7 +127,7 @@ if [ "x$1" = "xbashrc" ]; then
   exit 0
 fi
 
-CURRENTBRNTOOLSGITVERSION=`(cd $DIR;git log | grep commit | head -n 1 | awk '{print $2}')`
+CURRENTBRNTOOLSGITVERSION=`(cd $DIR; git log | grep commit | head -n 1 | awk '{print $2}')`
 
 #if diff gitversion just reread the bashrc first
 if [ "x$CURRENTBRNTOOLSGITVERSION" != "x$BRNTOOLSGITVERSION" ] && [ -f $DIR/brn-tools.bashrc ]; then
@@ -157,13 +158,29 @@ if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ]; then
 fi
 
 
+#*********************************************************************************
+#*********************** S E T U P   B U I L D ***********************************
+#*********************************************************************************
+
+if [ "x$FULL" = "x1" ]; then
+  DEVELOP=1
+  ENABLE_NS3=1
+  BRNDRIVER=1
+  BRNTESTBED=1
+fi
+
+# toggle dependency checking
+if [ "x$DEPS" = "x1" ]; then
+  CHECK_DEPS=1
+fi
+
 #*******************************************************************************************
 #********************************** B R N - D R I V E R  ***********************************
 #*******************************************************************************************
 
 if [ "x$1" = "xdriver" ]; then
   if [ ! -e ../brn-driver ]; then
-    ( cd ..; git clone git@$GITHOST:brn-driver )
+    ( cd ..; git clone $GITURL:brn-driver )
   fi
 
   ( cd ../brn-driver; sh ./brn-driver.sh init)
@@ -177,7 +194,7 @@ fi
 
 if [ "x$1" = "xtestbed" ]; then
   if [ ! -e ../brn-testbed ]; then
-    ( cd ..; git clone git@$GITHOST:brn-testbed )
+    ( cd ..; git clone $GITURL:brn-testbed )
   fi
 
   ( cd ../brn-testbed; sh ./brn-testbed.sh )
@@ -228,12 +245,14 @@ if [ "x$1" = "xpull" ]; then
    CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi
    exit 0
 fi
+
 if [ "x$1" = "xpush" ]; then
    for i in $GITSUBDIRS; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi); done
    echo "brn-tools"
    CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then git checkout master; git merge $CURRENT; fi; git pull; git push; if [ "x$CURRENT" != "xmaster" ]; then git checkout $CURRENT; git rebase master; fi
    exit 0
 fi
+
 if [ "x$1" = "xgui" ]; then
    for i in $GITSUBDIRS; do echo $i; (cd $i; git gui); done
    echo "brn-tools"
@@ -309,7 +328,7 @@ fi
 if [ ! -e brn-tools ]; then
   if [ ! -e click-brn ]; then
     echo "Get sources..."
-    git clone git@$GITHOST:brn-tools
+    git clone $GITURL:brn-tools
 
     echo "Start build"
     (cd ./brn-tools; sh ./brn-tools.sh)
@@ -355,7 +374,9 @@ for i in `git submodule | awk '{print $2}'`; do
   (cd $i; git checkout master)
 done
 
-chmod 600 helper/host/etc/keys/id_dsa
+if [ -f helper/host/etc/keys/id_dsa ]; then
+  chmod 600 helper/host/etc/keys/id_dsa
+fi
 
 #***********************************************************************
 #******************************** B U I L D ****************************
