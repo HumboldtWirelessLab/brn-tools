@@ -362,6 +362,7 @@ echo "Use $CPUS cpus"
 #*************************** G E T   S O U R C E S ( S T A G E   2 ) *********************
 #*****************************************************************************************
 
+BUILDLIBS=yes
 BUILDCLICK=yes
 BUILDCLICKSCRIPTS=yes
 
@@ -381,6 +382,14 @@ fi
 #***********************************************************************
 #******************************** B U I L D ****************************
 #***********************************************************************
+
+if [ "x$BUILDLIBS" = "xyes" ]; then
+  if [ -e click-brn-libs/src ]; then
+    if [ -f click-brn-libs/src/build.sh ]; then
+      (cd click-brn-libs/src/; ./build.sh)
+    fi
+  fi
+fi
 
 if [ "x$CLICKPATH" = "x" ]; then
   if [ -e click-extern ]; then
