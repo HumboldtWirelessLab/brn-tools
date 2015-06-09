@@ -442,7 +442,7 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
 
   CLICK_CFLAGS=`(cd $CLICKPATH/ns; make linkerconfig)`
   CLICK_CFLAGS="$CLICK_CFLAGS -I$DIR/click-brn-libs/include -L$DIR/click-brn-libs/lib"
-  (cd $NS3PATH; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf configure --with-nsclick=$CLICKPATH --enable-examples; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf build) 2>&1 | tee ns3_build.log
+  (cd $NS3PATH; export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR/click-brn-libs/lib"; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf configure --with-nsclick=$CLICKPATH --enable-examples; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf build) 2>&1 | tee ns3_build.log
   echo "export NS3_HOME=$NS3PATH/" > $NS3PATH/bashrc.ns3
 fi
 
