@@ -1,24 +1,18 @@
 [submodule "click-brn"]
 	path = click-brn
-	url = git@gitsar:click-brn
+	url = git@github.com:HumboldtWirelessLab/click-brn.git 
 [submodule "click-brn-scripts"]
 	path = click-brn-scripts
-	url = git@gitsar:click-brn-scripts
+	url = git@github.com:HumboldtWirelessLab/click-brn-scripts.git
 [submodule "helper"]
 	path = helper
-	url = git@gitsar:helper
+	url = git@github.com:HumboldtWirelessLab/helper.git
 [submodule "ns2/src/ns-2.34"]
 	path = ns2/src/ns-2.34
-	url = git@gitsar:ns-2.34
+	url = git@github.com:HumboldtWirelessLab/ns-2.34.git
 [submodule "brn-ns2-click"]
 	path = brn-ns2-click
-	url = git@gitsar:brn-ns2-click
-[submodule "jist-brn"]
-	path = jist-brn
-	url = git@gitsar:jist-brn
-[submodule "ns-3-brn"]
-	path = ns-3-brn
-	url = git@gitsar:ns-3-brn
+	url = git@github.com:HumboldtWirelessLab/brn-ns2-click.git
 [submodule "click-brn-libs"]
 	path = click-brn-libs
-	url = git@gitsar:click-brn-libs
+	url = git@github.com:HumboldtWirelessLab/click-brn-libs.git
