@@ -174,6 +174,10 @@ if [ "x$DEPS" = "x1" ]; then
   CHECK_DEPS=1
 fi
 
+if [ ! -e jist-brn ]; then
+  DISABLE_JIST=1
+fi
+
 #*******************************************************************************************
 #********************************** B R N - D R I V E R  ***********************************
 #*******************************************************************************************
@@ -383,6 +387,8 @@ fi
 #******************************** B U I L D ****************************
 #***********************************************************************
 
+export BRN_TOOLS_PATH=$DIR
+
 if [ "x$BUILDLIBS" = "xyes" ]; then
   if [ -e click-brn-libs/src ]; then
     if [ -f click-brn-libs/src/build.sh ]; then
@@ -423,7 +429,8 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   fi
 fi
 
-(cd brn-ns2-click; XCFLAGS="$XCFLAGS" CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 BRN_TOOLS_PATH=$DIR PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee ns2_build.log
+echo "(cd brn-ns2-click; XCFLAGS=\"$XCFLAGS\" CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 BRN_TOOLS_PATH=$DIR PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee -a ns2_build.log" > ns2_build.log
+(cd brn-ns2-click; XCFLAGS="$XCFLAGS" CLEAN=$CLEAN DEVELOP=$DEVELOP VERSION=5 BRN_TOOLS_PATH=$DIR PREFIX=$DIR/ns2 CPUS=$CPUS CLICKPATH=$CLICKPATH ./install_ns2.sh) 2>&1 | tee -a ns2_build.log
 
 if [ $DISABLE_JIST -eq 0 ]; then
   (cd jist-brn/brn-install/; sh ./install.sh ) 2>&1 | tee jist_build.log
@@ -440,10 +447,13 @@ if [ "x$ENABLE_NS3" = "x1" ]; then
     fi
   fi
 
-  CLICK_CFLAGS=`(cd $CLICKPATH/ns; make linkerconfig)`
-  CLICK_CFLAGS="$CLICK_CFLAGS -I$DIR/click-brn-libs/include -L$DIR/click-brn-libs/lib"
-  (cd $NS3PATH; export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR/click-brn-libs/lib"; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf configure --with-nsclick=$CLICKPATH --enable-examples; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf build) 2>&1 | tee ns3_build.log
-  echo "export NS3_HOME=$NS3PATH/" > $NS3PATH/bashrc.ns3
+  if [ -e $NS3PATH ]; then
+
+    CLICK_CFLAGS=`(cd $CLICKPATH/ns; make linkerconfig)`
+    CLICK_CFLAGS="$CLICK_CFLAGS -I$DIR/click-brn-libs/include -L$DIR/click-brn-libs/lib"
+    (cd $NS3PATH; export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR/click-brn-libs/lib"; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf configure --with-nsclick=$CLICKPATH --enable-examples; CCFLAGS="$CLICK_CFLAGS" CXXFLAGS="$CLICK_CFLAGS" ./waf build) 2>&1 | tee ns3_build.log
+    echo "export NS3_HOME=$NS3PATH/" > $NS3PATH/bashrc.ns3
+  fi
 fi
 
 build_bashrc
