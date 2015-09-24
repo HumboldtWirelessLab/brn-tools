@@ -423,9 +423,9 @@ if [ "x$BUILDCLICK" = "xyes" ]; then
   fi
 
   if [ $DISABLE_JIST -eq 0 ]; then
-	(cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; BRN_TOOLS_PATH=$DIR XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
+	(cd $CLICKPATH; export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR/click-brn-libs/lib"; touch ./configure; /bin/sh brn-conf.sh tools; BRN_TOOLS_PATH=$DIR XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh sim_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
   else
-	(cd $CLICKPATH;touch ./configure; /bin/sh brn-conf.sh tools; BRN_TOOLS_PATH=$DIR XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh ns2_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
+	(cd $CLICKPATH; export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$DIR/click-brn-libs/lib"; touch ./configure; /bin/sh brn-conf.sh tools; BRN_TOOLS_PATH=$DIR XCFLAGS="-fpermissive -fPIC $XCFLAGS" /bin/sh brn-conf.sh ns2_userlevel; make -j $CPUS) 2>&1 | tee click_build.log
   fi
 fi
 
