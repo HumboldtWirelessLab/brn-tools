@@ -101,6 +101,7 @@ build_bashrc()
   fi
 }
 
+
 #*********************************************************************************
 #*************************   S E T   U R L S   ***********************************
 #*********************************************************************************
@@ -156,7 +157,6 @@ if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ]; then
   echo "Build brn-tools!!!! Start $0 without args!"
   exit 0
 fi
-
 
 #*********************************************************************************
 #*********************** S E T U P   B U I L D ***********************************
@@ -223,30 +223,47 @@ if [ "x$1" = "xpull" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" =
    if [ -e ns-3-extern/.git ]; then
      GITSUBDIRS="$GITSUBDIRS ns-3-extern"
    fi
-   if [ -e ns-3-extern/.git ]; then
+   if [ -e click-extern/.git ]; then
      GITSUBDIRS="$GITSUBDIRS click-extern"
    fi
 fi
 
-if [ "x$1" = "xpull" ]; then
-   git pull
+if [ "x$1" = "xpull" ] || [ "x$1" = "xpullfrom" ]; then
 
-   if [ ! -e click-brn/.git ]; then
+   if [ "x$1" = "xpullfrom" ] && [ "x$2" = "x" ]; then
+     echo "Use $0 $1 URL/PATH"
+     exit 1
+   fi
+
+   if [ "x$1" = "xpull" ]; then
+     echo "brn-tools"
+     CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi
+   fi
+
+   if [ ! -e .git/modules ]; then
      git submodule init
      git submodule update
    fi
 
-   if [ ! -e click-brn-libs/.git ]; then
-     (cd click-brn-libs/; git submodule init; git submodule update; git checkout master)
-   fi
-
    for i in $GITSUBDIRS; do
-     (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" = "x(no" ]; then git checkout master; fi )
+     (cd $i; CURRENT=`LANG=en git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" = "x(no" ] || [ "x$CURRENT" = "x(detached" ]; then git checkout master; fi )
    done
 
-   for i in $GITSUBDIRS; do echo $i; (cd $i;CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi); done
-   echo "brn-tools"
-   CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi
+   for i in $GITSUBDIRS; do 
+     echo $i
+     if [ "x$1" = "xpullfrom" ]; then
+       if [ -e $2/$i ]; then
+         SUBMODSOURCE=$2/$i
+       else
+         SUBMODNAME=`basename $i`
+         SUBMODSOURCE=$2/$SUBMODNAME
+       fi
+       (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull $SUBMODSOURCE; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi)
+     else
+       (cd $i; CURRENT=`git branch | grep "*" | awk '{print $2}'`; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch to master (current: $CURRENT)"; git checkout master; fi; git pull; if [ "x$CURRENT" != "xmaster" ]; then echo "Switch back to $CURRENT"; git checkout $CURRENT; git rebase master; fi)
+     fi
+   done
+
    exit 0
 fi
 
@@ -269,6 +286,7 @@ if [ "x$1" = "xstatus" ]; then
    git status
    exit 0
 fi
+
 if [ "x$1" = "xallstatus" ]; then
    sh $0 status
    if [ -e ../brn-driver/brn-driver.sh ]; then ( cd ../brn-driver; sh ./brn-driver.sh status); fi
@@ -280,6 +298,7 @@ if [ "x$1" != "x" ]; then
   sh $0 help
   exit 0
 fi
+
 #******************************************************************************
 #*************************** C H E C K   S O F T W A R E  *********************
 #******************************************************************************
@@ -371,8 +390,7 @@ BUILDCLICK=yes
 BUILDCLICKSCRIPTS=yes
 
 if [ ! -e click-brn/.git ]; then
-  git submodule init
-  git submodule update
+  $0 pull
 fi
 
 for i in `git submodule | awk '{print $2}'`; do
@@ -473,7 +491,7 @@ else
   TESTS_OVERALL=`cat test.log | grep "Test" | wc -l`
   TESTS_OK=`cat test.log | grep "Test" | awk '{print $3}' | grep "ok" | wc -l`
 
-  echo "$TESTS_OK of $TESTS_OVERALL tests finished without errors. See $DIR/click-brn-scripts/testbed.pdf for more details."
+  echo "$TESTS_OK of $TESTS_OVERALL tests finished without errors."
 
   if [ $TESTS_OK -ne $TESTS_OVERALL ]; then
     echo "Detect failures. Please send test.log, click_build.log, jist_build.log and ns2_build.log (hwl-team)."
