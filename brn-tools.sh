@@ -390,7 +390,7 @@ BUILDCLICK=yes
 BUILDCLICKSCRIPTS=yes
 
 if [ ! -e click-brn/.git ]; then
-  $0 pull
+  sh $0 pull
 fi
 
 for i in `git submodule | awk '{print $2}'`; do
