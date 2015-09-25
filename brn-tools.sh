@@ -389,9 +389,7 @@ BUILDLIBS=yes
 BUILDCLICK=yes
 BUILDCLICKSCRIPTS=yes
 
-if [ ! -e click-brn/.git ]; then
-  sh $0 pull
-fi
+sh $0 pull
 
 for i in `git submodule | awk '{print $2}'`; do
   (cd $i; git checkout master)
