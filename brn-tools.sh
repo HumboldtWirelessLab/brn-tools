@@ -153,7 +153,7 @@ if [ -f $DIR/brn-tools.bashrc ] && [ "x$1" = "x" ]; then
   exit 0
 fi
 
-if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ]; then
+if [ ! -f $DIR/brn-tools.bashrc ] && [ "x$1" != "x" ] && [ "x$1" != "xpull" ]; then
   echo "Build brn-tools!!!! Start $0 without args!"
   exit 0
 fi
@@ -328,7 +328,7 @@ if [ $? = 1 ]; then
   exit 1;
 fi
 
-echo "Do you want to check for build dependencies now? (y/n) -Sudo required!-"
+echo -n "Do you want to check for build dependencies now? (y/n) -Sudo required!- "
 read DEP_CHECK
 if [ "x$DEP_CHECK" = "xy" ] || [ "x$DEP_CHECK" = "xY" ]; then
   resolve_deps "$deps"
