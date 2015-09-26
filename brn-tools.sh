@@ -218,7 +218,7 @@ fi
 #******************************************* U P D A T E ***********************************
 #*******************************************************************************************
 
-if [ "x$1" = "xpull" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" = "xstatus" ]; then
+if [ "x$1" = "xpull" ] || [ "x$1" = "xpullfrom" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" = "xstatus" ]; then
    GITSUBDIRS=`git submodule | awk '{print $2}'`
    if [ -e ns-3-extern/.git ]; then
      GITSUBDIRS="$GITSUBDIRS ns-3-extern"
