@@ -218,7 +218,7 @@ fi
 #******************************************* U P D A T E ***********************************
 #*******************************************************************************************
 
-if [ "x$1" = "xpull" ] || [ "x$1" = "xpullfrom" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" = "xstatus" ]; then
+if [ "x$1" = "xpull" ] || [ "x$1" = "xpullfrom" ] || [ "x$1" = "xpush" ] || [ "x$1" = "xgui" ] || [ "x$1" = "xstatus" ] || [ "x$1" = "xversion" ]; then
    GITSUBDIRS=`git submodule | awk '{print $2}'`
    if [ -e ns-3-extern/.git ]; then
      GITSUBDIRS="$GITSUBDIRS ns-3-extern"
@@ -284,6 +284,13 @@ if [ "x$1" = "xstatus" ]; then
    for i in $GITSUBDIRS; do echo $i; (cd $i; git status); done
    echo "brn-tools"
    git status
+   exit 0
+fi
+
+if [ "x$1" = "xversion" ]; then
+   for i in $GITSUBDIRS; do echo -n "$i: "; (cd $i; git log | head -n 1 | awk '{print $2}'); done
+   echo -n "brn-tools: "
+   git log | head -n 1 | awk '{print $2}'
    exit 0
 fi
 
