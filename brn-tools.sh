@@ -489,7 +489,7 @@ else
 
   . $DIR/brn-tools.bashrc
 
-  (cd $DIR/click-brn-scripts/; VALGRINDOPTION="$VALGRINDOPTION" VALGRIND=$VALGRIND VALGRINDXML=$VALGRINDXML NOLATEX=1 sh ./test.sh) > test.log 2> /dev/null
+  (cd $DIR/click-brn-scripts/; NOSUPP=$NOSUPP VALGRINDOPTION="$VALGRINDOPTION" VALGRIND=$VALGRIND VALGRINDXML=$VALGRINDXML NOLATEX=1 sh ./test.sh) > test.log 2> /dev/null
 
   #less test.log
 
